@@ -217,8 +217,8 @@ class PlaywireClient {
   * @param integer $n required
   * @return object
   */
-  function rpp($n) {
-    $this->rpp = $n;
+  function per($n) {
+    $this->per = $n;
     return $this;
   }
   
@@ -272,8 +272,14 @@ class PlaywireClient {
    * @param array   $data     optional
    */
   protected function get($endpoint, $data=false) {
+    $paging = '';
+    if($this->page || $this->per) {
+      $paging = $this->urlify(array('page' => $this->page, 'per' => $this->per));
+    }
     if($data) {
-      $endpoint .= '/?'.$this->urlify($data);
+      $endpoint .= '/?'.$this->urlify($data).$paging;
+    } else {
+      $endpoint .= '/?'.$paging;
     }
 
     $this->method = PlaywireClient::GET;
