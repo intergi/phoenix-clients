@@ -3,7 +3,7 @@
 The PHP Playwire Client provides a fairly simple class to manage your videos in the new Playwire.
 
 ## Installation
-This client has no external dependencies. Simple download the client library, place it in a location of your choosing, and require/include it where you'd like to use it.
+This client has no external dependencies. Just download the client library, place it in a location of your choosing, and require/include it where you'd like to use it.
 
 ## Usage
 
