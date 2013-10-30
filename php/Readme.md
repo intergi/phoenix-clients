@@ -7,7 +7,7 @@ This client has no external dependencies. Simple download the client library, pl
 
 ## Usage
 
-Most of the API methods outlined in the [documentation](http://kb.intergi.com/kb/PLY3142/) require authentication before they can be used.
+Most of the API methods outlined in the [documentation](http://kb.intergi.com/kb/PHX3146/) require authentication before they can be used.
 
 The constructor provides two methods to start your authenticated API session: you can provide your API token (`new PlaywireClient('API_TOKEN')`) OR your login credentials (`new PlaywireClient('user@example.com', 'secure_password')`). In the latter case, the client will authenticate with those credentials to retreive the API token for each subsequent request. When instantiated without any arguments, no authentication will take place and you'll need to authenticate manually.
 
