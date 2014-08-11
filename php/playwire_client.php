@@ -50,7 +50,7 @@ class PlaywireClient {
   /**
    * @var string
    */
-  var $baseURL = 'http://0.0.0.0:3000/api';
+  var $baseURL = 'http://phoenix.playwire.com/api';
   
   /**
    * @var string - GET|POST|PUT|DELETE
@@ -158,6 +158,7 @@ class PlaywireClient {
    *
    * @param string  $name        required
    * @param string  $source_url  required
+   * @param integer $category_id required
    * @param array   $optional    optional   Refer to: http://kb.intergi.com/kb/PHX3146/ 
    * @return object
    */
