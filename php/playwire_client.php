@@ -50,7 +50,7 @@ class PlaywireClient {
   /**
    * @var string
    */
-  var $baseURL = 'http://phoenix.playwire.com/api';
+  var $baseURL = 'http://0.0.0.0:3000/api';
   
   /**
    * @var string - GET|POST|PUT|DELETE
@@ -113,7 +113,14 @@ class PlaywireClient {
     return $this;
   }
 
-  
+  /**
+  * @param string $token required
+  */
+  public function __authenticate($token) {
+    $this->set_token($token);
+    return $this;
+  }
+
   /**
    * List videos in the account.
    * 
@@ -154,9 +161,8 @@ class PlaywireClient {
    * @param array   $optional    optional   Refer to: http://kb.intergi.com/kb/PHX3146/ 
    * @return object
    */
-  public function create_video($name, $source_url, $optional=array()) {
-    $data = array_merge($optional, array('name' => $name, 'source_url' => $source_url));
-
+  public function create_video($name, $source_url, $category_id, $optional=array()) {
+    $data = array_merge($optional, array('name' => $name, 'source_url' => $source_url, 'category_id' => $category_id));
     return $this->post('/videos', $this->wrap_keys($data, 'video'));
   }
 
@@ -255,6 +261,17 @@ class PlaywireClient {
   }
 
   /**
+   * Perform a GET request.
+   *
+   * @param string  $endpoint required
+   * @param array   $data     optional
+   */
+  protected function delete($endpoint, $data=false) {
+    $this->method = PlaywireClient::DELETE;
+    return $this->request($endpoint, $data);
+  }
+
+  /**
    * Perform a PUT request.
    *
    * @param string  $endpoint required
@@ -297,9 +314,8 @@ class PlaywireClient {
    */
   protected function request($endpoint, $data=false) {
     $url = $this->baseURL.$endpoint;
-
     $post_data = $data ? $this->urlify($data) : false;
-    return $this->objectify($this->process($url, $post_data, $method));
+    return $this->objectify($this->process($url, $post_data, $this->method));
   }
 
   /**
