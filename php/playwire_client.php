@@ -114,14 +114,6 @@ class PlaywireClient {
   }
 
   /**
-  * @param string $token required
-  */
-  public function __authenticate($token) {
-    $this->set_token($token);
-    return $this;
-  }
-
-  /**
    * List videos in the account.
    * 
    * When provided with the optional `$id`, it will return the
@@ -147,7 +139,7 @@ class PlaywireClient {
    * @return object
    */
   public function video($id) {
-    $this->videos($id);
+    return $this->videos($id);
   }
 
   /**
