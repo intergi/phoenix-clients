@@ -8,7 +8,7 @@
  * @package PHPTwitterSearch
  */
 class PlaywireClient {
-    
+
     const GET     = 'GET';
     const POST    = 'POST';
     const PUT     = 'PUT';
@@ -19,14 +19,14 @@ class PlaywireClient {
      * @var boolean
      */
     var $token = '';
-    
-    
+
+
   /**
    * Can be set to JSON (requires PHP 5.2 or the json pecl module) or XML - json|xml
    * @var string
    */
   var $type = 'json';
-  
+
   /**
    * @var array
    */
@@ -35,13 +35,13 @@ class PlaywireClient {
     'X-Playwire-Client-Version: 0.1',
     'X-Playwire-Client-URL: http://www.playwire.com'
     );
-  
+
   /**
    * Recommend setting a user-agent so Playwire knows how to contact you in case of abuse. Include your email
    * @var string
    */
   var $user_agent = '';
-  
+
   /**
    * @var array
    */
@@ -51,18 +51,18 @@ class PlaywireClient {
    * @var string
    */
   var $baseURL = 'http://phoenix.playwire.com/api';
-  
+
   /**
    * @var string - GET|POST|PUT|DELETE
    */
   var $method = PlaywireClient::GET;
-  
+
   /**
    * The number of results to return per page, max 100
    * @var integer
    */
   var $per;
-  
+
   /**
    * The page number to return
    * @var integer
@@ -74,8 +74,8 @@ class PlaywireClient {
    * @var integer 1|0
    */
   var $verbose = 0;
-  
-    
+
+
   /**
    * Accepts a variable number of arguments to initialize the Client.
    * A single argument is assumed to be the API Token, two arguments are
@@ -115,9 +115,9 @@ class PlaywireClient {
 
   /**
    * List videos in the account.
-   * 
+   *
    * When provided with the optional `$id`, it will return the
-   * video data for that `$id`. 
+   * video data for that `$id`.
    *
    * @param string $id optional
    * @return array(object) OR object
@@ -132,8 +132,8 @@ class PlaywireClient {
 
   /**
    * Retrieve a single video.
-   * 
-   * This is a wrapper for clarity. 
+   *
+   * This is a wrapper for clarity.
    *
    * @param string $id required
    * @return object
@@ -144,28 +144,70 @@ class PlaywireClient {
 
   /**
    * Create a video.
-   * 
+   *
    * The `$source_url` should be a direct, publically accessible URL
    * that resolves directly to the video file.
    *
-   * @param string  $name        required
-   * @param string  $source_url  required
-   * @param integer $category_id required
-   * @param array   $optional    optional   Refer to: http://kb.intergi.com/kb/PHX3146/ 
+   * @param string  $name            required
+   * @param string  $source_url      required
+   * @param integer $category_id     required
+   * @param array   $optional        optional   Refer to: http://kb.intergi.com/kb/PHX3146/
    * @return object
    */
   public function create_video($name, $source_url, $category_id, $optional=array()) {
-    $data = array_merge($optional, array('name' => $name, 'source_url' => $source_url, 'category_id' => $category_id));
+    if (isset($optional['bypass_encoding']) && $optional['bypass_encoding'] == 'true') {
+      $data = array_merge($optional, array('name' => $name, 'category_id' => $category_id));
+    } else {
+      $data = array_merge($optional, array('name' => $name, 'source_url' => $source_url, 'category_id' => $category_id));
+    }
     return $this->post('/videos', $this->wrap_keys($data, 'video'));
   }
 
   /**
+   * Create a bypassed video.
+   *
+   * @param string  $name        required
+   * @param integer $category_id required
+   * @param array   $optional    optional   Refer to: http://kb.intergi.com/kb/PHX3146/
+   * @return object
+   */
+  public function create_bypass_video($name, $category_id, $optional=array()) {
+    $data = array_merge($optional, array('name' => $name, 'category_id' => $category_id, 'bypass_encoding' => true));
+    return $this->post('/videos', $this->wrap_keys($data, 'video'));
+  }
+
+  /**
+   * Create a bypassed video version.
+   *
+   * @param integer $video_id   required
+   * @param string  $source_url required
+   * @param string  $resolution required
+   * @return object
+   */
+  public function create_bypass_video_version($video_id, $source_url, $resolution) {
+    $data = array('source_url' => $source_url, 'resolution' => $resolution);
+    return $this->post('/videos/'.$video_id.'/versions', $this->wrap_keys($data, 'version'));
+  }
+
+  /**
+   * Create a bypassed video poster.
+   *
+   * @param integer $video_id   required
+   * @param string  $poster_url required
+   * @return object
+   */
+  public function create_bypass_video_poster($video_id, $poster_url) {
+    $data = array('poster_url' => $poster_url);
+    return $this->post('/videos/'.$video_id.'/posters', $this->wrap_keys($data, 'poster'));
+  }
+
+  /**
    * Update a video.
-   * 
+   *
    * Updates a video with the data from `$changes` and returns the video object.
    *
    * @param integer $id      required
-   * @param array   $changes optional   Refer to: http://kb.intergi.com/kb/PHX3146/ 
+   * @param array   $changes optional   Refer to: http://kb.intergi.com/kb/PHX3146/
    * @return object
    */
   public function update_video($id, $changes=array()) {
@@ -175,7 +217,7 @@ class PlaywireClient {
 
   /**
    * Delete a video.
-   * 
+   *
    * Deletes a video determined by the `$id` and returns the video object.
    *
    * @param integer $id      required
@@ -187,9 +229,9 @@ class PlaywireClient {
 
   /**
    * List videos from the Sandbox.
-   * 
+   *
    * When provided with the optional `$id`, it will return the
-   * video data for that `$id`. 
+   * video data for that `$id`.
    *
    * @param integer $id optional
    * @return array(object) OR object
@@ -211,7 +253,7 @@ class PlaywireClient {
   public function sandbox_import($id) {
     return $this->post('/videos/import', array('id' => $id));
   }
-    
+
   /**
   * @param integer $n required
   * @return object
@@ -220,7 +262,7 @@ class PlaywireClient {
     $this->per = $n;
     return $this;
   }
-  
+
   /**
   * @param integer $n required
   * @return object
@@ -241,7 +283,7 @@ class PlaywireClient {
       array_push($this->headers, "Intergi-Access-Token: $this->token");
     }
   }
-  
+
   /**
    * Perform a POST request.
    *
@@ -299,7 +341,7 @@ class PlaywireClient {
   /**
    * Perform a request.
    * This helper method wraps up some of the nitty-gritty
-   * with the `baseURL` and encoding/decoding data in the 
+   * with the `baseURL` and encoding/decoding data in the
    * response and request.
    *
    * @param string  $endpoint required
@@ -345,7 +387,7 @@ class PlaywireClient {
     }
     return implode("&", $urlified);
   }
-  
+
   /**
    * Internal function where all the juicy curl fun takes place
    * this should not be called by anything external unless you are
@@ -367,7 +409,7 @@ class PlaywireClient {
 
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     }
-        
+
     curl_setopt($ch, CURLOPT_VERBOSE, $this->verbose);
     curl_setopt($ch, CURLOPT_NOBODY, 0);
     curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -377,13 +419,13 @@ class PlaywireClient {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
 
     $response = curl_exec($ch);
-        
+
     $this->responseInfo=curl_getinfo($ch);
     curl_close($ch);
-    
+
     return $response;
   }
-  
+
   /**
    * Function to prepare data for return to client
    * @access private
@@ -411,5 +453,4 @@ class PlaywireClient {
       return false;
   }
 }
-
 ?>
