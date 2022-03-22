@@ -50,7 +50,7 @@ class PlaywireClient {
   /**
    * @var string
    */
-  var $baseURL = 'http://phoenix.playwire.com/api';
+  var $baseURL = 'http://ramp.playwire.com/api';
 
   /**
    * @var string - GET|POST|PUT|DELETE
